@@ -53,10 +53,10 @@ export default function WhatsAppBanner() {
             📲 Stay Updated on WhatsApp
           </p>
           <p
-            className="text-xs mt-0.5 truncate"
+            className="text-xs mt-0.5"
             style={{ color: "var(--color-neutral-500)" }}
           >
-            Admit cards, exam link &amp; results
+            Get all the important notification and updates directly.
           </p>
         </div>
         <div className="flex items-center gap-2 flex-shrink-0">
