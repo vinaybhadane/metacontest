@@ -1,0 +1,32 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Users can only read/write their own profile
+    match /users/{uid} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+      allow create: if request.auth != null && request.auth.uid == uid;
+      // Users cannot update paymentStatus themselves — only Admin SDK can
+      allow update: if request.auth != null
+                    && request.auth.uid == uid
+                    && !('paymentStatus' in request.resource.data.diff(resource.data).affectedKeys())
+                    && !('paymentId' in request.resource.data.diff(resource.data).affectedKeys())
+                    && !('orderId' in request.resource.data.diff(resource.data).affectedKeys());
+      allow delete: if false;
+    }
+
+    // Ambassadors
+    match /ambassadors/{uid} {
+      // Public leaderboard read
+      allow read: if true;
+      // Only authenticated user can create their own ambassador doc
+      allow create: if request.auth != null && request.auth.uid == uid;
+      // User can update their own doc but NOT referralCount (only Admin SDK updates that)
+      allow update: if request.auth != null
+                    && request.auth.uid == uid
+                    && !('referralCount' in request.resource.data.diff(resource.data).affectedKeys())
+                    && !('referrals' in request.resource.data.diff(resource.data).affectedKeys());
+      allow delete: if false;
+    }
+  }
+}
