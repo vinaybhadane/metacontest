@@ -71,6 +71,8 @@ export default function RegistrationForm({
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
+  const isTestingUser = user?.email === "testing@metacontest.com";
+
   const {
     register,
     handleSubmit,
@@ -81,6 +83,11 @@ export default function RegistrationForm({
     resolver: zodResolver(schema),
     mode: "onChange",
     defaultValues: {
+      fullName: isTestingUser ? "Razorpay Test User" : "",
+      dob: isTestingUser ? "2000-01-01" : "",
+      college: isTestingUser ? "Razorpay Testing Institute" : "",
+      mobile: isTestingUser ? "9876543210" : "",
+      degree: isTestingUser ? "B.Tech/B.E." : "",
       referralCode: referralFromUrl || "",
     },
   });
