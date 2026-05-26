@@ -3,6 +3,7 @@ import { z } from "zod";
 import { adminDb } from "@/lib/firebase-admin";
 import { generateReferralCode } from "@/lib/referral";
 import { FieldValue } from "firebase-admin/firestore";
+import { buildAmbassadorApprovalEmail, sendEmail } from "@/lib/mailjet";
 
 const ambassadorSchema = z.object({
   uid: z.string().min(1),
@@ -32,6 +33,23 @@ export async function POST(req: NextRequest) {
 
     const { uid, name, college, email, mobile, whyAmbassador } = parsed.data;
 
+    // Secure flow check: user must be successfully registered as a participant with verified payment
+    const userDoc = await adminDb.doc(`users/${uid}`).get();
+    if (!userDoc.exists) {
+      return NextResponse.json(
+        { error: "You must first register as a participant in the META Contest." },
+        { status: 400 }
+      );
+    }
+
+    const userData = userDoc.data();
+    if (userData?.paymentStatus !== "paid") {
+      return NextResponse.json(
+        { error: "Your payment must be verified before you can become a Campus Ambassador." },
+        { status: 400 }
+      );
+    }
+
     // Check if ambassador already exists
     const existing = await adminDb.doc(`ambassadors/${uid}`).get();
     if (existing.exists) {
@@ -39,10 +57,17 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({
         exists: true,
         referralCode: data?.referralCode,
+        status: data?.status || "active",
       });
     }
 
-    // Save as pending — admin must approve before referral code is assigned
+    // Generate referral code immediately
+    const referralCode = generateReferralCode(name);
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://metacontest.me";
+    const referralLink = `${appUrl}/register?ref=${referralCode}`;
+    const whatsappGroup = process.env.NEXT_PUBLIC_WHATSAPP_AMBASSADOR_GROUP || "https://wa.me/";
+
+    // Save as active — no admin approval needed
     await adminDb.doc(`ambassadors/${uid}`).set({
       uid,
       name,
@@ -50,14 +75,30 @@ export async function POST(req: NextRequest) {
       email,
       mobile,
       whyAmbassador: whyAmbassador || "",
-      referralCode: null,
+      referralCode,
       referralCount: 0,
       referrals: [],
-      status: "pending",
+      status: "active",
       createdAt: FieldValue.serverTimestamp(),
     });
 
-    return NextResponse.json({ success: true, status: "pending" });
+    // Send ambassador approval/welcome email immediately
+    try {
+      const emailMsg = buildAmbassadorApprovalEmail({
+        name,
+        email,
+        referralCode,
+        referralLink,
+        whatsappGroup,
+        appUrl,
+      });
+      await sendEmail(emailMsg);
+    } catch (emailErr) {
+      console.error("Failed to send welcome email to ambassador:", emailErr);
+      // Do not fail the whole request if email fails, but log it.
+    }
+
+    return NextResponse.json({ success: true, status: "active", referralCode });
 
   } catch (err) {
     console.error("ambassador route error:", err);

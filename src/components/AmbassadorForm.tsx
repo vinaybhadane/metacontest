@@ -105,16 +105,16 @@ export default function AmbassadorForm() {
             className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"
             style={{ background: "#e7f0ff" }}
           >
-            <Clock size={32} style={{ color: "var(--color-brand-blue)" }} />
+            <CheckCircle2 size={32} style={{ color: "var(--color-brand-blue)" }} />
           </div>
           <h3
             className="text-2xl font-bold mb-2"
             style={{ fontFamily: "var(--font-display)", color: "var(--color-neutral-900)" }}
           >
-            Application Submitted!
+            Welcome, Ambassador! 🎉
           </h3>
           <p className="text-sm" style={{ color: "var(--color-neutral-500)" }}>
-            Your ambassador application is under review.
+            Your application has been instantly activated. We are redirecting you to your referral dashboard...
           </p>
         </div>
 
@@ -125,19 +125,19 @@ export default function AmbassadorForm() {
           <div className="flex items-start gap-2">
             <CheckCircle2 size={15} className="shrink-0 mt-0.5" style={{ color: "#16a34a" }} />
             <p className="text-sm" style={{ color: "#166534" }}>
-              Application received and sent for admin review.
+              You are now registered as a META Contest Campus Ambassador!
             </p>
           </div>
           <div className="flex items-start gap-2">
             <Mail size={15} className="shrink-0 mt-0.5" style={{ color: "#16a34a" }} />
             <p className="text-sm" style={{ color: "#166534" }}>
-              Once approved, you will receive your <strong>referral code</strong> and further details by email.
+              Your <strong>referral link</strong> and WhatsApp group details have been sent to your email.
             </p>
           </div>
           <div className="flex items-start gap-2">
-            <Clock size={15} className="shrink-0 mt-0.5" style={{ color: "#16a34a" }} />
+            <Loader2 size={15} className="shrink-0 mt-0.5 animate-spin" style={{ color: "#16a34a" }} />
             <p className="text-sm" style={{ color: "#166534" }}>
-              Typical review time: <strong>within 24 hours</strong>.
+              Initializing your dashboard views...
             </p>
           </div>
         </div>

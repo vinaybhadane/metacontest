@@ -21,6 +21,9 @@ import {
   Check,
   ExternalLink,
   Loader2,
+  Lock,
+  CreditCard,
+  AlertCircle,
 } from "lucide-react";
 import Link from "next/link";
 import AmbassadorForm from "@/components/AmbassadorForm";
@@ -90,6 +93,8 @@ export default function AmbassadorPage() {
   const { user, loading: authLoading } = useAuth();
   const [ambassadorProfile, setAmbassadorProfile] = useState<any | null>(null);
   const [profileLoading, setProfileLoading] = useState(true);
+  const [participantProfile, setParticipantProfile] = useState<any | null>(null);
+  const [participantLoading, setParticipantLoading] = useState(true);
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
@@ -153,6 +158,33 @@ export default function AmbassadorPage() {
       (err) => {
         console.error("Error fetching ambassador status:", err);
         setProfileLoading(false);
+      }
+    );
+
+    return unsubscribe;
+  }, [user, authLoading]);
+
+  useEffect(() => {
+    if (authLoading) return;
+    if (!user) {
+      setParticipantProfile(null);
+      setParticipantLoading(false);
+      return;
+    }
+
+    const unsubscribe = onSnapshot(
+      doc(db, "users", user.uid),
+      (snap) => {
+        if (snap.exists()) {
+          setParticipantProfile(snap.data());
+        } else {
+          setParticipantProfile(null);
+        }
+        setParticipantLoading(false);
+      },
+      (err) => {
+        console.error("Error fetching participant status:", err);
+        setParticipantLoading(false);
       }
     );
 
@@ -403,49 +435,114 @@ export default function AmbassadorPage() {
                 className="bg-white rounded-3xl border p-8 shadow-sm"
                 style={{ borderColor: "var(--color-neutral-200)" }}
               >
-                {authLoading || (user && profileLoading) ? (
+                {authLoading || (user && (profileLoading || participantLoading)) ? (
                   <div className="flex items-center justify-center py-12">
                     <Loader2 className="animate-spin text-[var(--color-brand-blue)]" size={32} />
                   </div>
-                ) : ambassadorProfile?.status === "pending" ? (
-                  // ── Pending approval ──────────────────────────
-                  <div className="space-y-5 text-center py-4">
-                    <div
-                      className="w-16 h-16 rounded-full flex items-center justify-center mx-auto"
-                      style={{ background: "#e7f0ff" }}
+                ) : !user ? (
+                  <div className="text-center py-6 space-y-4">
+                    <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto" style={{ background: "#e7f0ff" }}>
+                      <Lock size={28} style={{ color: "var(--color-brand-blue)" }} />
+                    </div>
+                    <h2
+                      className="text-2xl font-bold"
+                      style={{
+                        fontFamily: "var(--font-display)",
+                        color: "var(--color-neutral-900)",
+                      }}
                     >
-                      <Loader2 size={28} className="animate-spin" style={{ color: "var(--color-brand-blue)" }} />
-                    </div>
-                    <div>
-                      <p className="font-bold text-lg" style={{ color: "var(--color-neutral-900)" }}>
-                        Application Under Review
-                      </p>
-                      <p className="text-sm mt-1" style={{ color: "var(--color-neutral-500)" }}>
-                        Your ambassador application is being reviewed by our team.
-                        You will receive your referral code by email once approved (within 24 hours).
-                      </p>
-                    </div>
+                      Authentication Required
+                    </h2>
+                    <p
+                      className="text-sm max-w-sm mx-auto mb-6 leading-relaxed"
+                      style={{ color: "var(--color-neutral-500)" }}
+                    >
+                      To become a Campus Ambassador, you must first log in and register for the META Contest. Once your payment is successfully verified, you will be able to register as an ambassador.
+                    </p>
+                    <GoogleAuthButton onSuccess={() => {}} />
                   </div>
-                ) : ambassadorProfile?.status === "rejected" ? (
-                  // ── Rejected ──────────────────────────────────
-                  <div className="space-y-4 text-center py-4">
-                    <div className="text-4xl">😔</div>
-                    <div>
-                      <p className="font-bold text-lg" style={{ color: "var(--color-neutral-900)" }}>
-                        Application Not Approved
-                      </p>
-                      <p className="text-sm mt-1" style={{ color: "var(--color-neutral-500)" }}>
-                        Unfortunately your ambassador application was not approved this time.
-                        Check your email for more details.
-                      </p>
+                ) : !participantProfile ? (
+                  <div className="text-center py-6 space-y-4">
+                    <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto" style={{ background: "#fee2e2" }}>
+                      <AlertCircle size={28} style={{ color: "#dc2626" }} />
                     </div>
+                    <h2
+                      className="text-2xl font-bold"
+                      style={{
+                        fontFamily: "var(--font-display)",
+                        color: "var(--color-neutral-900)",
+                      }}
+                    >
+                      Registration Required
+                    </h2>
+                    <p
+                      className="text-sm max-w-sm mx-auto mb-6 leading-relaxed"
+                      style={{ color: "var(--color-neutral-500)" }}
+                    >
+                      You must be registered as a participant in the META Contest 2026 to apply as a Campus Ambassador.
+                    </p>
                     <Link
                       href="/register"
                       className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold text-white text-sm transition-all hover:-translate-y-0.5"
                       style={{ background: "var(--color-brand-blue)" }}
                     >
-                      Register as Contestant →
+                      Register for META Contest →
                     </Link>
+                  </div>
+                ) : participantProfile.paymentStatus !== "paid" ? (
+                  <div className="text-center py-6 space-y-4">
+                    <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto" style={{ background: "#fef3c7" }}>
+                      <CreditCard size={28} style={{ color: "#d97706" }} />
+                    </div>
+                    <h2
+                      className="text-2xl font-bold"
+                      style={{
+                        fontFamily: "var(--font-display)",
+                        color: "var(--color-neutral-900)",
+                      }}
+                    >
+                      Payment Verification Required
+                    </h2>
+                    <div
+                      className="text-sm max-w-sm mx-auto mb-6 leading-relaxed space-y-2"
+                      style={{ color: "var(--color-neutral-500)" }}
+                    >
+                      <p>
+                        Your participant registration payment must be successfully verified before you can become a Campus Ambassador.
+                      </p>
+                      {participantProfile.paymentStatus === "utr_submitted" && (
+                        <p className="text-xs font-semibold px-3 py-2 rounded-xl bg-amber-50 border border-amber-200 text-amber-800">
+                          Current status: UTR Payment verification is currently under review by our admin. Once verified, you will be able to become an ambassador.
+                        </p>
+                      )}
+                      {participantProfile.paymentStatus === "rejected" && (
+                        <p className="text-xs font-semibold px-3 py-2 rounded-xl bg-red-50 border border-red-200 text-red-800">
+                          Current status: Your previous payment verification request was rejected. Please resubmit your correct payment details.
+                        </p>
+                      )}
+                      {participantProfile.paymentStatus === "pending_payment" && (
+                        <p className="text-xs font-semibold px-3 py-2 rounded-xl bg-blue-50 border border-blue-200 text-blue-800">
+                          Current status: Payment is pending.
+                        </p>
+                      )}
+                    </div>
+                    {participantProfile.paymentStatus === "utr_submitted" ? (
+                      <Link
+                        href="/dashboard"
+                        className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold text-white text-sm transition-all hover:-translate-y-0.5"
+                        style={{ background: "var(--color-brand-blue)" }}
+                      >
+                        Go to Participant Dashboard →
+                      </Link>
+                    ) : (
+                      <Link
+                        href="/register"
+                        className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold text-white text-sm transition-all hover:-translate-y-0.5"
+                        style={{ background: "var(--color-brand-blue)" }}
+                      >
+                        Complete Payment Verification →
+                      </Link>
+                    )}
                   </div>
                 ) : ambassadorProfile?.status === "active" ? (
                   <div className="space-y-6">
@@ -574,25 +671,45 @@ export default function AmbassadorPage() {
                       Go to My Dashboard →
                     </Link>
                   </div>
-                ) : !user ? (
-                  <div className="text-center py-6 space-y-4">
-                    <div className="text-4xl">🔐</div>
-                    <h2
-                      className="text-2xl font-bold"
-                      style={{
-                        fontFamily: "var(--font-display)",
-                        color: "var(--color-neutral-900)",
-                      }}
+                ) : ambassadorProfile?.status === "pending" ? (
+                  // ── Pending approval ──────────────────────────
+                  <div className="space-y-5 text-center py-4">
+                    <div
+                      className="w-16 h-16 rounded-full flex items-center justify-center mx-auto"
+                      style={{ background: "#e7f0ff" }}
                     >
-                      Authentication Required
-                    </h2>
-                    <p
-                      className="text-sm max-w-sm mx-auto mb-6"
-                      style={{ color: "var(--color-neutral-500)" }}
+                      <Loader2 size={28} className="animate-spin" style={{ color: "var(--color-brand-blue)" }} />
+                    </div>
+                    <div>
+                      <p className="font-bold text-lg" style={{ color: "var(--color-neutral-900)" }}>
+                        Application Under Review
+                      </p>
+                      <p className="text-sm mt-1" style={{ color: "var(--color-neutral-500)" }}>
+                        Your ambassador application is being reviewed by our team.
+                        You will receive your referral code by email once approved (within 24 hours).
+                      </p>
+                    </div>
+                  </div>
+                ) : ambassadorProfile?.status === "rejected" ? (
+                  // ── Rejected ──────────────────────────────────
+                  <div className="space-y-4 text-center py-4">
+                    <div className="text-4xl">😔</div>
+                    <div>
+                      <p className="font-bold text-lg" style={{ color: "var(--color-neutral-900)" }}>
+                        Application Not Approved
+                      </p>
+                      <p className="text-sm mt-1" style={{ color: "var(--color-neutral-500)" }}>
+                        Unfortunately your ambassador application was not approved this time.
+                        Check your email for more details.
+                      </p>
+                    </div>
+                    <Link
+                      href="/register"
+                      className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold text-white text-sm transition-all hover:-translate-y-0.5"
+                      style={{ background: "var(--color-brand-blue)" }}
                     >
-                      Please sign in with Google to apply for the META Contest Campus Ambassador program.
-                    </p>
-                    <GoogleAuthButton onSuccess={() => {}} />
+                      Register as Contestant →
+                    </Link>
                   </div>
                 ) : (
                   <>
