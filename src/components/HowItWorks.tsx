@@ -23,7 +23,7 @@ const steps = [
     number: "03",
     emoji: "💻",
     title: "Appear",
-    desc: "Take the online proctored exam on June 6, 2026, from the comfort of your home.",
+    desc: "Take the online proctored exam on June 6, 2026 at 1:00 PM, from the comfort of your home.",
     color: "#059669",
     bg: "#d1fae5",
   },

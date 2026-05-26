@@ -98,7 +98,7 @@ export function buildConfirmationEmail(params: {
                     <tr>
                       <td style="padding:8px 0;border-bottom:1px solid #e4e6eb;">
                         <span style="color:#65676b;font-size:13px;">📅 Exam Date</span><br/>
-                        <strong style="color:#1c1e21;font-size:15px;">June 6, 2026 (Online Proctored)</strong>
+                        <strong style="color:#1c1e21;font-size:15px;">June 6, 2026 at 1:00 PM (Online Proctored)</strong>
                       </td>
                     </tr>
                     <tr>

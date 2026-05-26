@@ -48,7 +48,7 @@ export default function RefundPage() {
                 <span>2.</span> Inability to Participate / Missed Exam
               </h2>
               <p>
-                If a registered candidate is unable to appear for the online exam on June 6, 2026, due to technical issues on the candidate's end (including but not limited to slow internet speed, lack of power backup, device crash, camera failure), personal emergencies, or scheduling conflicts, the registration fee will not be refunded, and the slot cannot be transferred to another participant.
+                If a registered candidate is unable to appear for the online exam on June 6, 2026 at 1:00 PM, due to technical issues on the candidate's end (including but not limited to slow internet speed, lack of power backup, device crash, camera failure), personal emergencies, or scheduling conflicts, the registration fee will not be refunded, and the slot cannot be transferred to another participant.
               </p>
             </section>
 

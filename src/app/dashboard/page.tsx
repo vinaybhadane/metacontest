@@ -225,7 +225,7 @@ export default function DashboardPage() {
               {[
                 { label: "Date", value: "June 6, 2026" },
                 { label: "Mode", value: "Online Proctored" },
-                { label: "Time", value: "TBA (Check WhatsApp)" },
+                { label: "Time", value: "1:00 PM (IST)" },
                 { label: "Questions", value: "50 MCQs" },
               ].map((item) => (
                 <div key={item.label} className="flex justify-between text-sm">

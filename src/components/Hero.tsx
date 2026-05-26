@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import { MessageCircle, ArrowRight } from "lucide-react";
 
 const WHATSAPP = process.env.NEXT_PUBLIC_WHATSAPP_CHANNEL || "https://wa.me/";
-const EXAM_DATE = new Date("2026-06-06T00:00:00+05:30");
+const EXAM_DATE = new Date("2026-06-06T13:00:00+05:30");
 
 function useCountdown(target: Date) {
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
@@ -107,7 +107,7 @@ export default function Hero() {
         >
           <StatBadge icon="📝" text="50 Questions" delay={0.1} />
           <StatBadge icon="💰" text="₹10,000 Prize Pool" delay={0.2} />
-          <StatBadge icon="📅" text="June 6, 2026" delay={0.3} />
+          <StatBadge icon="📅" text="June 6, 1:00 PM" delay={0.3} />
         </motion.div>
 
         {/* Headline */}
@@ -238,7 +238,7 @@ export default function Hero() {
             className="mt-4 text-sm"
             style={{ color: "var(--color-neutral-500)" }}
           >
-            June 6, 2026 · Online Proctored Exam
+            June 6, 2026 at 1:00 PM · Online Proctored Exam
           </p>
         </motion.div>
       </div>

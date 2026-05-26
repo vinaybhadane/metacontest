@@ -16,7 +16,7 @@ const details = [
     icon: Calendar,
     title: "Exam Date",
     value: "June 6, 2026",
-    desc: "Online Proctored",
+    desc: "1:00 PM · Online Proctored",
     color: "#0064E0",
     bg: "#e7f0ff",
   },
