@@ -70,7 +70,7 @@ function ProgressBar({ step }: { step: Step }) {
 }
 
 function RegisterContent() {
-  const { user, loading, signInWithEmail } = useAuth();
+  const { user, loading } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
   const refCode = searchParams.get("ref") || undefined;
@@ -78,10 +78,6 @@ function RegisterContent() {
   const [step, setStep] = useState<Step>(1);
   const [checkingStatus, setCheckingStatus] = useState(false);
   const [paymentStatus, setPaymentStatus] = useState<string>("pending_payment");
-
-  // Guest login states
-  const [signingIn, setSigningIn] = useState(false);
-  const [loginError, setLoginError] = useState<string | null>(null);
 
   // Once user logs in, check their existing registration status
   useEffect(() => {
@@ -116,17 +112,6 @@ function RegisterContent() {
     checkStatus();
   }, [user, router]);
 
-  const handleGuestLogin = async () => {
-    try {
-      setSigningIn(true);
-      setLoginError(null);
-      await signInWithEmail("testing@metacontest.com", "password@123");
-    } catch (err: any) {
-      setLoginError(err.message || "Guest login failed. Please try again.");
-    } finally {
-      setSigningIn(false);
-    }
-  };
 
   if (loading || checkingStatus) {
     return (
@@ -167,46 +152,6 @@ function RegisterContent() {
           </div>
           
           <GoogleAuthButton onSuccess={() => {}} />
-
-          <div className="flex items-center my-6">
-            <div className="flex-grow border-t" style={{ borderColor: "var(--color-neutral-200)" }} />
-            <span className="mx-4 text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--color-neutral-500)" }}>
-              or
-            </span>
-            <div className="flex-grow border-t" style={{ borderColor: "var(--color-neutral-200)" }} />
-          </div>
-
-          {loginError && (
-            <div
-              className="rounded-xl px-4 py-3 text-sm text-center mb-4"
-              style={{ background: "#fee2e2", color: "#dc2626" }}
-            >
-              {loginError}
-            </div>
-          )}
-
-          <button
-            id="guest-login-btn"
-            onClick={handleGuestLogin}
-            disabled={signingIn}
-            className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl font-semibold transition-all disabled:opacity-60 disabled:cursor-not-allowed hover:-translate-y-0.5 hover:shadow-lg border"
-            style={{
-              borderColor: "var(--color-neutral-200)",
-              background: "#ffffff",
-              color: "var(--color-neutral-900)",
-            }}
-          >
-            {signingIn ? (
-              <>
-                <Loader2 size={18} className="animate-spin" style={{ color: "var(--color-brand-blue)" }} />
-                Logging in...
-              </>
-            ) : (
-              <>
-                👤 Continue as Guest (Testing)
-              </>
-            )}
-          </button>
 
           <p
             className="text-xs text-center mt-4"
