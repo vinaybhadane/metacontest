@@ -42,8 +42,7 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    const referralCode = generateReferralCode(name);
-
+    // Save as pending — admin must approve before referral code is assigned
     await adminDb.doc(`ambassadors/${uid}`).set({
       uid,
       name,
@@ -51,14 +50,15 @@ export async function POST(req: NextRequest) {
       email,
       mobile,
       whyAmbassador: whyAmbassador || "",
-      referralCode,
+      referralCode: null,
       referralCount: 0,
       referrals: [],
-      status: "active",
+      status: "pending",
       createdAt: FieldValue.serverTimestamp(),
     });
 
-    return NextResponse.json({ success: true, referralCode });
+    return NextResponse.json({ success: true, status: "pending" });
+
   } catch (err) {
     console.error("ambassador route error:", err);
     return NextResponse.json(

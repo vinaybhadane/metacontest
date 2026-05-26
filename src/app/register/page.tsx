@@ -77,6 +77,7 @@ function RegisterContent() {
 
   const [step, setStep] = useState<Step>(1);
   const [checkingStatus, setCheckingStatus] = useState(false);
+  const [paymentStatus, setPaymentStatus] = useState<string>("pending_payment");
 
   // Guest login states
   const [signingIn, setSigningIn] = useState(false);
@@ -98,7 +99,8 @@ function RegisterContent() {
             router.push("/dashboard");
             return;
           }
-          // Profile exists but not paid — skip to payment
+          // Profile exists but not paid — store status and skip to payment
+          setPaymentStatus(data.paymentStatus || "pending_payment");
           setStep(3);
         } else {
           // New user — go to form
@@ -265,7 +267,7 @@ function RegisterContent() {
               One last step — pay ₹50 to secure your spot!
             </p>
           </div>
-          <PaymentButton />
+          <PaymentButton paymentStatus={paymentStatus} />
         </div>
       )}
     </div>

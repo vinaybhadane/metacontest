@@ -1,0 +1,11 @@
+# *
+User-agent: *
+Allow: /
+Disallow: /dashboard
+Disallow: /api/
+
+# Host
+Host: https://metacontest.me
+
+# Sitemaps
+Sitemap: https://metacontest.me/sitemap.xml

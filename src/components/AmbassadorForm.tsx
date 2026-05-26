@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { zodResolver } from "@hookform/resolvers/zod" ;
 import { z } from "zod";
-import { Loader2, CheckCircle2, Copy, Check, ExternalLink, MessageCircle } from "lucide-react";
+import { Loader2, Clock, Mail, CheckCircle2 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 
 const WHATSAPP_AMBASSADOR =
@@ -32,8 +32,6 @@ type FormValues = z.infer<typeof schema>;
 export default function AmbassadorForm() {
   const { user } = useAuth();
   const [success, setSuccess] = useState(false);
-  const [referralCode, setReferralCode] = useState<string>("");
-  const [copied, setCopied] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -77,7 +75,7 @@ export default function AmbassadorForm() {
         return;
       }
 
-      setReferralCode(result.referralCode);
+      // API now returns { success: true, status: 'pending' } — no referral code yet
       setSuccess(true);
     } catch {
       setError("Something went wrong. Please try again.");
@@ -86,11 +84,7 @@ export default function AmbassadorForm() {
     }
   };
 
-  const copyCode = async () => {
-    await navigator.clipboard.writeText(referralCode);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
+
 
   const inputClass =
     "w-full px-4 py-3 rounded-xl border text-sm outline-none transition-all focus:ring-2 focus:ring-[#0064e0] focus:border-[#0064e0]";
@@ -104,107 +98,49 @@ export default function AmbassadorForm() {
   const errorStyle = { color: "#dc2626" };
 
   if (success) {
-    const referralLink = `${APP_URL}/register?ref=${referralCode}`;
     return (
       <div className="space-y-6">
         <div className="text-center">
-          <div className="text-5xl mb-4">🎉</div>
+          <div
+            className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"
+            style={{ background: "#e7f0ff" }}
+          >
+            <Clock size={32} style={{ color: "var(--color-brand-blue)" }} />
+          </div>
           <h3
             className="text-2xl font-bold mb-2"
-            style={{
-              fontFamily: "var(--font-display)",
-              color: "var(--color-neutral-900)",
-            }}
+            style={{ fontFamily: "var(--font-display)", color: "var(--color-neutral-900)" }}
           >
-            You&apos;re an Ambassador!
+            Application Submitted!
           </h3>
           <p className="text-sm" style={{ color: "var(--color-neutral-500)" }}>
-            Welcome to the META Contest Ambassador Program
+            Your ambassador application is under review.
           </p>
         </div>
 
-        {/* Referral code */}
         <div
-          className="rounded-2xl border p-5"
-          style={{
-            background: "var(--color-brand-light)",
-            borderColor: "var(--color-brand-blue)",
-          }}
+          className="rounded-2xl border p-5 space-y-3"
+          style={{ borderColor: "#bbf7d0", background: "#f0fdf4" }}
         >
-          <p
-            className="text-xs font-bold uppercase tracking-wide mb-2"
-            style={{ color: "var(--color-brand-blue)" }}
-          >
-            Your Referral Code
-          </p>
-          <div className="flex items-center gap-3">
-            <span
-              className="text-2xl font-mono font-bold tracking-widest flex-1"
-              style={{ color: "var(--color-brand-blue)" }}
-            >
-              {referralCode}
-            </span>
-            <button
-              onClick={copyCode}
-              className="p-2 rounded-lg"
-              style={{
-                background: copied ? "#d1fae5" : "white",
-                color: copied ? "#16a34a" : "var(--color-brand-blue)",
-              }}
-            >
-              {copied ? <Check size={18} /> : <Copy size={18} />}
-            </button>
+          <div className="flex items-start gap-2">
+            <CheckCircle2 size={15} className="shrink-0 mt-0.5" style={{ color: "#16a34a" }} />
+            <p className="text-sm" style={{ color: "#166534" }}>
+              Application received and sent for admin review.
+            </p>
+          </div>
+          <div className="flex items-start gap-2">
+            <Mail size={15} className="shrink-0 mt-0.5" style={{ color: "#16a34a" }} />
+            <p className="text-sm" style={{ color: "#166534" }}>
+              Once approved, you will receive your <strong>referral code</strong> and further details by email.
+            </p>
+          </div>
+          <div className="flex items-start gap-2">
+            <Clock size={15} className="shrink-0 mt-0.5" style={{ color: "#16a34a" }} />
+            <p className="text-sm" style={{ color: "#166534" }}>
+              Typical review time: <strong>within 24 hours</strong>.
+            </p>
           </div>
         </div>
-
-        {/* Share link */}
-        <div>
-          <p
-            className="text-xs font-semibold uppercase tracking-wide mb-2"
-            style={{ color: "var(--color-neutral-500)" }}
-          >
-            Shareable Registration Link
-          </p>
-          <div
-            className="flex items-center gap-2 rounded-xl border p-3"
-            style={{
-              background: "var(--color-neutral-100)",
-              borderColor: "var(--color-neutral-200)",
-            }}
-          >
-            <span
-              className="flex-1 text-xs truncate"
-              style={{ color: "var(--color-neutral-700)" }}
-            >
-              {referralLink}
-            </span>
-            <a
-              href={referralLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="p-2 rounded-lg"
-              style={{
-                background: "var(--color-brand-light)",
-                color: "var(--color-brand-blue)",
-              }}
-            >
-              <ExternalLink size={14} />
-            </a>
-          </div>
-        </div>
-
-        {/* WhatsApp group */}
-        <a
-          href={WHATSAPP_AMBASSADOR}
-          target="_blank"
-          rel="noopener noreferrer"
-          id="ambassador-whatsapp-btn"
-          className="flex items-center justify-center gap-2 w-full py-4 rounded-xl font-bold text-sm text-white"
-          style={{ background: "#25D366" }}
-        >
-          <MessageCircle size={18} fill="currentColor" />
-          Join Ambassador WhatsApp Group →
-        </a>
       </div>
     );
   }

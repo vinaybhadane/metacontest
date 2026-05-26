@@ -407,7 +407,47 @@ export default function AmbassadorPage() {
                   <div className="flex items-center justify-center py-12">
                     <Loader2 className="animate-spin text-[var(--color-brand-blue)]" size={32} />
                   </div>
-                ) : ambassadorProfile ? (
+                ) : ambassadorProfile?.status === "pending" ? (
+                  // ── Pending approval ──────────────────────────
+                  <div className="space-y-5 text-center py-4">
+                    <div
+                      className="w-16 h-16 rounded-full flex items-center justify-center mx-auto"
+                      style={{ background: "#e7f0ff" }}
+                    >
+                      <Loader2 size={28} className="animate-spin" style={{ color: "var(--color-brand-blue)" }} />
+                    </div>
+                    <div>
+                      <p className="font-bold text-lg" style={{ color: "var(--color-neutral-900)" }}>
+                        Application Under Review
+                      </p>
+                      <p className="text-sm mt-1" style={{ color: "var(--color-neutral-500)" }}>
+                        Your ambassador application is being reviewed by our team.
+                        You will receive your referral code by email once approved (within 24 hours).
+                      </p>
+                    </div>
+                  </div>
+                ) : ambassadorProfile?.status === "rejected" ? (
+                  // ── Rejected ──────────────────────────────────
+                  <div className="space-y-4 text-center py-4">
+                    <div className="text-4xl">😔</div>
+                    <div>
+                      <p className="font-bold text-lg" style={{ color: "var(--color-neutral-900)" }}>
+                        Application Not Approved
+                      </p>
+                      <p className="text-sm mt-1" style={{ color: "var(--color-neutral-500)" }}>
+                        Unfortunately your ambassador application was not approved this time.
+                        Check your email for more details.
+                      </p>
+                    </div>
+                    <Link
+                      href="/register"
+                      className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold text-white text-sm transition-all hover:-translate-y-0.5"
+                      style={{ background: "var(--color-brand-blue)" }}
+                    >
+                      Register as Contestant →
+                    </Link>
+                  </div>
+                ) : ambassadorProfile?.status === "active" ? (
                   <div className="space-y-6">
                     <div className="rounded-2xl p-4 flex items-start gap-3" style={{ background: "var(--color-brand-light)", border: "1px solid var(--color-brand-blue)" }}>
                       <Award className="shrink-0 mt-0.5" size={24} style={{ color: "var(--color-brand-blue)" }} />
